@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/roman/otus/otus_git/build/cmake_install.cmake",
+		"/home/roman/otus/otus_git/build/tests/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
