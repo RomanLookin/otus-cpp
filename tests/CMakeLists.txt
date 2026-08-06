@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD 11)
 target_link_libraries(${PROJECT_NAME} PUBLIC
 
 helloworld
+GTest::GTest
 
 gtest
 
