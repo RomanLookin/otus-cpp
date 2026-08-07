@@ -1,3 +1,7 @@
+
+
+
+
 cmake_minimum_required(VERSION 3.12)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
@@ -5,8 +9,8 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
 project(helloworld VERSION ${PROJECT_VESRION})
 
-option(WITH_BOOST_TEST "Whether to build Boost test" off)
-option(WITH_GTEST "Whether to build google test" on)
+option(WITH_BOOST_TEST "Whether to build Boost test" OFF)
+option(WITH_GTEST "Whether to build google test" ON)
 
 configure_file(version.h.in version.h)
 #enable_testing()
@@ -22,6 +26,10 @@ set_target_properties(helloworld_cli helloworld PROPERTIES
 target_include_directories(helloworld
     PRIVATE "${CMAKE_BINARY_DIR}"
 )
+target_link_libraries(helloworld_cli PRIVATE
+    helloworld
+)
+
 if(WITH_GTEST)
     include(FetchContent)
     FetchContent_Declare(
