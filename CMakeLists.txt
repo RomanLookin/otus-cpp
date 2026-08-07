@@ -9,7 +9,7 @@ option(WITH_BOOST_TEST "Whether to build Boost test" off)
 option(WITH_GTEST "Whether to build google test" on)
 
 configure_file(version.h.in version.h)
-enable_testing()
+#enable_testing()
 
 add_executable(helloworld_cli main.cpp)
 add_library(helloworld lib.cpp)
@@ -23,15 +23,25 @@ target_include_directories(helloworld
     PRIVATE "${CMAKE_BINARY_DIR}"
 )
 if(WITH_GTEST)
-    find_package(GTest REQUIRED)
-    add_executable(test_version test_version_gtest.cpp)
-
-    set_target_properties(test_version PROPERTIES
-        CXX_STANDARD 14
-        CXX_STANDARD_REQUIRED ON
+    include(FetchContent)
+    FetchContent_Declare(
+          googletest
+          URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
     )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
 
-    target_link_libraries(my_tests GTest::gtest GTest::gtest_main)
+
+    #find_package(GTest REQUIRED)
+    #add_executable(test_version test_version_gtest.cpp)
+
+    #set_target_properties(test_version PROPERTIES
+    #    CXX_STANDARD 14
+    #    CXX_STANDARD_REQUIRED ON
+    #)
+
+    #target_link_libraries(my_tests GTest::gtest GTest::gtest_main)
 endif()
 
 
