@@ -6,10 +6,9 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 project(helloworld VERSION ${PROJECT_VESRION})
 
 option(WITH_BOOST_TEST "Whether to build Boost test" off)
+option(WITH_GTEST "Whether to build google test" on)
 
 configure_file(version.h.in version.h)
-set(INSTALL_GTEST OFF CACHE BOOL "Disable installation" FORCE)
-add_subdirectory(tests EXCLUDE_FROM_ALL)
 enable_testing()
 
 add_executable(helloworld_cli main.cpp)
@@ -23,12 +22,20 @@ set_target_properties(helloworld_cli helloworld PROPERTIES
 target_include_directories(helloworld
     PRIVATE "${CMAKE_BINARY_DIR}"
 )
+if(WITH_GTEST)
+    find_package(GTest REQUIRED)
+    add_executable(test_version test_version_gtest.cpp)
 
-target_link_libraries(helloworld_cli PRIVATE
-    helloworld
-    gtest
-        gtest_main
-)
+    set_target_properties(test_version PROPERTIES
+        CXX_STANDARD 14
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    target_link_libraries(my_tests GTest::gtest GTest::gtest_main)
+endif()
+
+
+
 
 if(WITH_BOOST_TEST)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
@@ -48,6 +55,7 @@ if(WITH_BOOST_TEST)
         ${Boost_LIBRARIES}
         helloworld
     )
+    
 endif()
 
 if (MSVC)
@@ -89,3 +97,8 @@ if(WITH_BOOST_TEST)
     enable_testing()
     add_test(test_version test_version)
 endif()
+if(WITH_GTEST)
+    enable_testing()
+    add_test(NAME MyTests COMMAND my_tests)
+endif()
+
