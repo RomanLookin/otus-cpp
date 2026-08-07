@@ -8,7 +8,7 @@ project(helloworld VERSION ${PROJECT_VESRION})
 option(WITH_BOOST_TEST "Whether to build Boost test" off)
 
 configure_file(version.h.in version.h)
-set(INSTALL_GTEST OFF CACHE BOOL "Disable instalation" FORCE)
+set(INSTALL_GTEST OFF CACHE BOOL "Disable installation" FORCE)
 add_subdirectory(tests EXCLUDE_FROM_ALL)
 enable_testing()
 
@@ -29,7 +29,7 @@ target_link_libraries(helloworld_cli PRIVATE
 )
 
 target_link_libraries(
-        helloworld
+        helloworld_cli
         gtest
         gtest_main
     )
