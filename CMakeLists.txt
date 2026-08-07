@@ -26,13 +26,9 @@ target_include_directories(helloworld
 
 target_link_libraries(helloworld_cli PRIVATE
     helloworld
-)
-
-target_link_libraries(
-        helloworld_cli
-        gtest
+    gtest
         gtest_main
-    )
+)
 
 if(WITH_BOOST_TEST)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
