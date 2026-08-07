@@ -8,8 +8,9 @@ project(helloworld VERSION ${PROJECT_VESRION})
 option(WITH_BOOST_TEST "Whether to build Boost test" off)
 
 configure_file(version.h.in version.h)
-
-add_subdirectory(tests)
+set(INSTALL_GTEST OFF CACHE BOOL "Disable instalation" FORCE)
+add_subdirectory(tests EXCLUDE_FROM_ALL)
+enable_testing()
 
 add_executable(helloworld_cli main.cpp)
 add_library(helloworld lib.cpp)
@@ -26,6 +27,12 @@ target_include_directories(helloworld
 target_link_libraries(helloworld_cli PRIVATE
     helloworld
 )
+
+target_link_libraries(
+        helloworld
+        gtest
+        gtest_main
+    )
 
 if(WITH_BOOST_TEST)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
