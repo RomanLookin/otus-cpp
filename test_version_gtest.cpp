@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../lib.h"
+#include "lib.h"
 
 TEST(test_version, simple_test)
 {
