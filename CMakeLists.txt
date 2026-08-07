@@ -33,12 +33,17 @@ if(WITH_GTEST)
    # FetchContent_MakeAvailable(googletest)
 
 
-    find_package(GTest COMPONENTS unit_test_framework REQUIRED)
+    find_package(GTest REQUIRED)
     add_executable(test_version test_version_gtest.cpp)
 
     set_target_properties(test_version PROPERTIES
         CXX_STANDARD 14
         CXX_STANDARD_REQUIRED ON
+    )
+
+    set_target_properties(test_version PROPERTIES
+        COMPILE_DEFINITIONS GTEST_TEST_DYN_LINK
+        INCLUDE_DIRECTORIES ${GTEST_INCLUDE_DIR}
     )
 
     target_link_libraries(test_version GTest::gtest GTest::gtest_main helloworld)
