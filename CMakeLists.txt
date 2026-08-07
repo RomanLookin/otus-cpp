@@ -23,28 +23,28 @@ target_include_directories(helloworld
     PRIVATE "${CMAKE_BINARY_DIR}"
 )
 if(WITH_GTEST)
-    #include(FetchContent)
-    #FetchContent_Declare(
-    #      googletest
-   #       URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-    #)
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    #set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-   # FetchContent_MakeAvailable(googletest)
+    include(FetchContent)
+    FetchContent_Declare(
+          googletest
+         URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+    )
+     For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
 
 
-    find_package(GTest REQUIRED)
+#    find_package(GTest REQUIRED)
     add_executable(test_version test_version_gtest.cpp)
 
-    set_target_properties(test_version PROPERTIES
-        CXX_STANDARD 14
-        CXX_STANDARD_REQUIRED ON
-    )
+#    set_target_properties(test_version PROPERTIES
+#        CXX_STANDARD 14
+#        CXX_STANDARD_REQUIRED ON
+#    )
 
-    set_target_properties(test_version PROPERTIES
-        COMPILE_DEFINITIONS GTEST_TEST_DYN_LINK
-        INCLUDE_DIRECTORIES ${GTEST_INCLUDE_DIR}
-    )
+ #   set_target_properties(test_version PROPERTIES
+#        COMPILE_DEFINITIONS GTEST_TEST_DYN_LINK
+#        INCLUDE_DIRECTORIES ${GTEST_INCLUDE_DIR}
+#    )
 
     target_link_libraries(test_version GTest::gtest GTest::gtest_main helloworld)
 endif()
