@@ -217,7 +217,7 @@ int main() {
             vector<unsigned> octetsA;
             ip_addr ip_adr;
             string octet;
-            for (int i = 0; i < v.at(0).size(); i++) {
+            for (size_t i = 0; i < v.at(0).size(); i++) {
                 if (v.at(0)[i] == '.') {
                     octetsA.push_back(stoi(octet));
 
@@ -242,7 +242,7 @@ int main() {
         vec_ip = sortIP_Address(vec_ip);
         
         //cout << "---------------------" << endl;
-        for(int l=0;l < vec_ip.size();l++)
+        for(size_t l=0;l < vec_ip.size();l++)
             vec_ip.at(l).print();
         //cout << "---------------------" << endl;
         random_device rd;
