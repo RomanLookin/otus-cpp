@@ -5,7 +5,7 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
 project(ip_filter VERSION ${PROJECT_VESRION})
 
-option(WITH_BOOST_TEST "Whether to build Boost test" off)
+option(WITH_BOOST_TEST "Whether to build Boost test" on)
 
 configure_file(version.h.in version.h)
 
