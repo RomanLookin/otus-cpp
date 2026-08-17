@@ -5,7 +5,7 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
 project(ip_filter VERSION ${PROJECT_VESRION})
 
-option(WITH_BOOST_TEST "Whether to build Boost test" on)
+option(WITH_BOOST_TEST "Whether to build Boost test" ON)
 
 configure_file(version.h.in version.h)
 
@@ -59,6 +59,18 @@ if (MSVC)
             /W4
         )
     endif()
+else ()
+    target_compile_options(helloworld_cli PRIVATE
+        -Wall -Wextra -pedantic -Werror
+    )
+    target_compile_options(helloworld PRIVATE
+        -Wall -Wextra -pedantic -Werror
+    )
+    if(WITH_BOOST_TEST)
+        target_compile_options(test_version PRIVATE
+            -Wall -Wextra -pedantic -Werror
+        )
+    endif()
 endif()
 
 install(TARGETS ip_filter RUNTIME DESTINATION bin)
@@ -70,7 +82,7 @@ set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 set(CPACK_PACKAGE_CONTACT example@example.com)
 include(CPack)
 
-#if(WITH_BOOST_TEST)
-#    enable_testing()
-#    add_test(test_version test_version)
-#endif()
+if(WITH_BOOST_TEST)
+    enable_testing()
+    add_test(test_version test_version)
+endif()
