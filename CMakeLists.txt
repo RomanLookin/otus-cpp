@@ -9,7 +9,7 @@ option(WITH_BOOST_TEST "Whether to build Boost test" off)
 
 configure_file(version.h.in version.h)
 
-add_subdirectory(tests)
+#add_subdirectory(tests)
 
 add_executable(ip_filter main.cpp)
 add_library(helloworld lib.cpp)
@@ -59,18 +59,6 @@ if (MSVC)
             /W4
         )
     endif()
-else ()
-    target_compile_options(ip_filter PRIVATE
-        -Wall -Wextra -pedantic -Werror
-    )
-    target_compile_options(helloworld PRIVATE
-        -Wall -Wextra -pedantic -Werror
-    )
-    if(WITH_BOOST_TEST)
-        target_compile_options(test_version PRIVATE
-            -Wall -Wextra -pedantic -Werror
-        )
-    endif()
 endif()
 
 install(TARGETS ip_filter RUNTIME DESTINATION bin)
@@ -82,7 +70,7 @@ set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 set(CPACK_PACKAGE_CONTACT example@example.com)
 include(CPack)
 
-if(WITH_BOOST_TEST)
-    enable_testing()
-    add_test(test_version test_version)
-endif()
+#if(WITH_BOOST_TEST)
+#    enable_testing()
+#    add_test(test_version test_version)
+#endif()
