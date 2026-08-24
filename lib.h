@@ -15,6 +15,12 @@ public:
                 "." << std::to_string(okt4) << std::endl;
     }
 };
+class for_variadic{
+public:
+    for_variadic(){};
+    std::vector<ip_addr>* adr;
+    std::vector<int> vec_oct;
+};
 
 bool customComp_back(ip_addr a, ip_addr b);
 bool customComp_forw(ip_addr a, ip_addr b);
@@ -24,3 +30,6 @@ std::vector<ip_addr> ip_filter_and(std::vector<ip_addr> vec_ip, int oct1);
 std::vector<ip_addr> ip_filter_and(std::vector<ip_addr> vec_ip, int oct1, int oct2);
 std::vector<ip_addr> ip_filter_or(std::vector<ip_addr> vec_ip, int oct1);
 std::vector<int> get_ip_adr(std::string str, bool& is_ok);
+template<typename T> void ip_filter_1(T oct);
+template<typename T, typename... Args> void ip_filter_1(T oct, Args... args);
+

@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 3.12)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
-#if (POLICY CMP0048)
-#    cmake_policy(SET CMP0048 NEW)
-#endif()
+if (POLICY CMP0048)
+    cmake_policy(SET CMP0048 NEW)
+endif()
 
 project(helloworld VERSION ${PROJECT_VESRION})
 
-option(WITH_BOOST_TEST "Whether to build Boost test" off)
+option(WITH_BOOST_TEST "Whether to build Boost test" OFF)
 
 configure_file(version.h.in version.h)
 
@@ -51,7 +51,7 @@ if(WITH_BOOST_TEST)
 endif()
 
 if (MSVC)
-    target_compile_options(ip_filter PRIVATE
+    target_compile_options(helloworld_cli PRIVATE
         /W4
     )
     target_compile_options(helloworld PRIVATE
@@ -76,16 +76,20 @@ else ()
     endif()
 endif()
 
-install(TARGETS helloworld_cli RUNTIME DESTINATION bin)
+#install(TARGETS helloworld_cli RUNTIME DESTINATION bin)
 
-set(CPACK_GENERATOR DEB)
-set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
-set(CPACK_PACKAGE_CONTACT example@example.com)
-include(CPack)
+#set(CPACK_GENERATOR DEB)
+#set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+#set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+#set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+#set(CPACK_PACKAGE_CONTACT example@example.com)
+#include(CPack)
 
 if(WITH_BOOST_TEST)
     enable_testing()
     add_test(test_version test_version)
 endif()
+#if(WITH_GTEST_TEST)
+#    enable_testing()
+#    add_test(test_version test_version)
+#endif()
