@@ -55,7 +55,7 @@ if(WITH_GTEST)
 #        INCLUDE_DIRECTORIES ${GTEST_INCLUDE_DIR}
 #    )
 
-#    target_link_libraries(test_version GTest::gtest GTest::gtest_main helloworld)
+    target_link_libraries(test_version gtest gtest_main helloworld)
 endif()
 
 if(WITH_BOOST_TEST)
