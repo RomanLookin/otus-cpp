@@ -9,6 +9,7 @@ endif()
 project(HW2 VERSION ${PROJECT_VESRION})
 
 option(WITH_BOOST_TEST "Whether to build Boost test" OFF)
+option(WITH_GTEST "Whether to build google test" ON)
 
 #configure_file(version.h.in version.h)
 
@@ -29,6 +30,33 @@ target_include_directories(helloworld
 target_link_libraries(ip_filter PRIVATE
     helloworld
 )
+
+if(WITH_GTEST)
+    include(FetchContent)
+    FetchContent_Declare(
+          googletest
+         URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+
+
+#    find_package(GTest REQUIRED)
+    add_executable(test_version test_version_gtest.cpp)
+
+#    set_target_properties(test_version PROPERTIES
+#        CXX_STANDARD 14
+#        CXX_STANDARD_REQUIRED ON
+#    )
+
+ #   set_target_properties(test_version PROPERTIES
+#        COMPILE_DEFINITIONS GTEST_TEST_DYN_LINK
+#        INCLUDE_DIRECTORIES ${GTEST_INCLUDE_DIR}
+#    )
+
+    target_link_libraries(test_version GTest::gtest GTest::gtest_main helloworld)
+endif()
 
 if(WITH_BOOST_TEST)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
@@ -76,16 +104,21 @@ else ()
     endif()
 endif()
 
-#install(TARGETS helloworld_cli RUNTIME DESTINATION bin)
+install(TARGETS ip_filter RUNTIME DESTINATION bin)
 
-#set(CPACK_GENERATOR DEB)
-#set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
-#set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
-#set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
-#set(CPACK_PACKAGE_CONTACT example@example.com)
-#include(CPack)
+set(CPACK_GENERATOR DEB)
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+set(CPACK_PACKAGE_CONTACT example@example.com)
+include(CPack)
 
 if(WITH_BOOST_TEST)
     enable_testing()
+    add_test(test_version test_version)
+endif()
+if(WITH_GTEST)
+    enable_testing()
+    #add_test(NAME MyTests COMMAND my_tests)
     add_test(test_version test_version)
 endif()
