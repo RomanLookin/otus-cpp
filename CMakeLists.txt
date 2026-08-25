@@ -43,7 +43,7 @@ if(WITH_GTEST)
 
 
 #    find_package(GTest REQUIRED)
-    add_executable(test_version test_version_gtest.cpp)
+    add_executable(tests tests.cpp)
 
 #    set_target_properties(test_version PROPERTIES
 #        CXX_STANDARD 14
