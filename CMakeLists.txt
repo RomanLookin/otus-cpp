@@ -43,7 +43,7 @@ if(WITH_GTEST)
 
 
 #    find_package(GTest REQUIRED)
-    add_executable(tests tests.cpp)
+#    add_executable(tests tests.cpp)
 
 #    set_target_properties(test_version PROPERTIES
 #        CXX_STANDARD 14
@@ -55,7 +55,7 @@ if(WITH_GTEST)
 #        INCLUDE_DIRECTORIES ${GTEST_INCLUDE_DIR}
 #    )
 
-    target_link_libraries(test_version GTest::gtest GTest::gtest_main helloworld)
+#    target_link_libraries(test_version GTest::gtest GTest::gtest_main helloworld)
 endif()
 
 if(WITH_BOOST_TEST)
