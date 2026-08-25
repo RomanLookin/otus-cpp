@@ -1,94 +1,16 @@
 #include "lib.h"
 #include <algorithm>
-#include "version.h"
 
-int version() {
-	return PROJECT_VERSION_PATCH;
-}
 bool customComp_back(ip_addr a, ip_addr b) {
-    if ((a.okt1 == b.okt1) && (a.okt2 == b.okt2) &&
-        (a.okt3 == b.okt3) && (a.okt4 == b.okt4)) {
+    if (a.arr_okt == b.arr_okt) {
         return false;
     }
-
-    // Compare the octets and return the result
-    if(a.okt1 > b.okt1){
-        return true;
-    }
-    else if(a.okt1 < b.okt1){
-        return false;
-    }
-    else if(a.okt1 == b.okt1){
-        if(a.okt2 > b.okt2){
+    if(a.arr_okt > b.arr_okt){
             return true;
-        }
-        else if(a.okt2 < b.okt2){
-            return false;
-        }
-        else if(a.okt2 == b.okt2){
-            if(a.okt3 > b.okt3){
-                return true;
-            }
-            else if(a.okt3 < b.okt3){
-                return false;
-            }
-            else if(a.okt3 == b.okt3){
-                if(a.okt4 > b.okt4){
-                    return true;
-                }
-                else if(a.okt4 < b.okt4){
-                    return false;
-                }
-
-            }
-
-        }
     }
-
-    return false;
+     return false;
 }
-bool customComp_forw(ip_addr a, ip_addr b) {
-    if ((a.okt1 == b.okt1) && (a.okt2 == b.okt2) &&
-        (a.okt3 == b.okt3) && (a.okt4 == b.okt4)) {
-        return false;
-    }
 
-    // Compare the octets and return the result
-    if(a.okt1 < b.okt1){
-        return true;
-    }
-    else if(a.okt1 > b.okt1){
-        return false;
-    }
-    else if(a.okt1 == b.okt1){
-        if(a.okt2 < b.okt2){
-            return true;
-        }
-        else if(a.okt2 > b.okt2){
-            return false;
-        }
-        else if(a.okt2 == b.okt2){
-            if(a.okt3 < b.okt3){
-                return true;
-            }
-            else if(a.okt3 > b.okt3){
-                return false;
-            }
-            else if(a.okt3 == b.okt3){
-                if(a.okt4 < b.okt4){
-                    return true;
-                }
-                else if(a.okt4 > b.okt4){
-                    return false;
-                }
-
-            }
-
-        }
-    }
-
-    return false;
-}
 std::vector<ip_addr> sortIP_Address(std::vector<ip_addr> arr) {
     // Sort the Array using Custom Comparator
     sort(arr.begin(), arr.end(), customComp_back);
@@ -114,12 +36,13 @@ std::vector<std::string> split(const std::string &str, char d)
     return r;
 }
 
+
 std::vector<ip_addr> ip_filter_and(std::vector<ip_addr> vec_ip, int oct1)
 {
     std::vector<ip_addr> new_vec_ip(vec_ip.size());
 	auto end_vec_ip = copy_if(begin(vec_ip), end(vec_ip),begin(new_vec_ip),
                 [&oct1](const ip_addr& ip){
-                    return ip.okt1 == (unsigned)oct1;
+                    return ip.arr_okt.at(0) == (unsigned)oct1;
     });
     new_vec_ip.erase(end_vec_ip, new_vec_ip.end());
 
@@ -133,7 +56,7 @@ std::vector<ip_addr> ip_filter_and(std::vector<ip_addr> vec_ip, int oct1, int oc
     std::vector<ip_addr> new_vec_ip(vec_ip.size());
 	auto end_vec_ip = copy_if(begin(vec_ip), end(vec_ip),begin(new_vec_ip),
                 [&oct1, &oct2](const ip_addr& ip){
-                    return ((ip.okt1 == (unsigned)oct1) && (ip.okt2 == (unsigned)oct2));
+                    return ((ip.arr_okt.at(0) == (unsigned)oct1) && (ip.arr_okt.at(1) == (unsigned)oct2));
     });
     new_vec_ip.erase(end_vec_ip, new_vec_ip.end());
     new_vec_ip = sortIP_Address(new_vec_ip);
@@ -146,8 +69,8 @@ std::vector<ip_addr> ip_filter_or(std::vector<ip_addr> vec_ip, int oct1)
     std::vector<ip_addr> new_vec_ip(vec_ip.size());
 	auto end_vec_ip3 = copy_if(begin(vec_ip), end(vec_ip),begin(new_vec_ip),
                 [&oct1](const ip_addr& ip){
-                    return (ip.okt1 == (unsigned)oct1) or (ip.okt2 == (unsigned)oct1) or
-                            (ip.okt3 == (unsigned)oct1) or (ip.okt4 == (unsigned)oct1);
+                    return (ip.arr_okt.at(0) == (unsigned)oct1) or (ip.arr_okt.at(1) == (unsigned)oct1) or
+                            (ip.arr_okt.at(2) == (unsigned)oct1) or (ip.arr_okt.at(3) == (unsigned)oct1);
         });
         new_vec_ip.erase(end_vec_ip3, new_vec_ip.end());
         

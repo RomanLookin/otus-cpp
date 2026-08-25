@@ -14,9 +14,11 @@ int main() {
     {
         std::vector<std::string> vecline;
         
+
         std::vector<ip_addr> vec_ip;
 
         for(std::string line; std::getline(std::cin, line);)
+        //for(const std::string& line : vecline)
         {
             bool ok = true;
 
@@ -40,8 +42,8 @@ int main() {
 
         shuffle(vec_ip.begin(), vec_ip.end(), g);
 
-        std::vector<ip_addr> new_vec_ip; 
-        
+        //std::vector<ip_addr> new_vec_ip;
+
         for_variadic fwar1;
         fwar1.vec_oct = {1};
         std::vector<ip_addr>* p_new_vec_ip= &vec_ip;

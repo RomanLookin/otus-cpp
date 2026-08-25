@@ -6,13 +6,13 @@ if (POLICY CMP0048)
     cmake_policy(SET CMP0048 NEW)
 endif()
 
-project(helloworld VERSION ${PROJECT_VESRION})
+project(HW2 VERSION ${PROJECT_VESRION})
 
 option(WITH_BOOST_TEST "Whether to build Boost test" OFF)
 
-configure_file(version.h.in version.h)
+#configure_file(version.h.in version.h)
 
-#add_subdirectory(tests)
+add_subdirectory(tests)
 
 add_executable(ip_filter main.cpp)
 add_library(helloworld lib.cpp)
@@ -76,14 +76,14 @@ else ()
     endif()
 endif()
 
-install(TARGETS helloworld_cli RUNTIME DESTINATION bin)
+#install(TARGETS helloworld_cli RUNTIME DESTINATION bin)
 
-set(CPACK_GENERATOR DEB)
-set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
-set(CPACK_PACKAGE_CONTACT example@example.com)
-include(CPack)
+#set(CPACK_GENERATOR DEB)
+#set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+#set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+#set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+#set(CPACK_PACKAGE_CONTACT example@example.com)
+#include(CPack)
 
 if(WITH_BOOST_TEST)
     enable_testing()
