@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 2.8)
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
-
+if (POLICY CMP0048)
+    cmake_policy(SET CMP0048 NEW)
+endif()
 
 project(allocator VERSION ${PROJECT_VESRION}) 
 
