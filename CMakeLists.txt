@@ -3,10 +3,12 @@ cmake_minimum_required(VERSION 2.8)
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
-option(WITH_BOOST_TEST "Whether to build Boost test" OFF)
+
 
 project(allocator VERSION ${PROJECT_VESRION}) 
-add_executable(${PROJECT_NAME} "main.cpp" "allocator.h")
+
+option(WITH_BOOST_TEST "Whether to build Boost test" OFF)
+add_executable(${PROJECT_NAME} main.cpp allocator.h)
 
 set_target_properties(allocator PROPERTIES
     CXX_STANDARD 14
