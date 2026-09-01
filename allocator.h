@@ -65,18 +65,28 @@ public:
 template <class T>
 class ArenaAllocator
 {
+
+public:
     size_t size;
     char* start;
     char* current;
     int* counter;
     size_t count = 10;
-public:
+
     using value_type = T;
     ArenaAllocator() noexcept {
         //
     }
-    template <class U> ArenaAllocator  (const ArenaAllocator<U>&) noexcept {
+    template <class U> ArenaAllocator  (const ArenaAllocator<U>& a) noexcept {
         //ArenaAllocator<U>;
+        std::cout << "ArenaAllocator Templ" << std::endl;
+        size = a.size;
+        start = a.start;
+        current = a.current;
+        int* counter2 = a.counter;
+        (*counter2)++;
+        counter = counter2;
+
     }
 
     ArenaAllocator(size_t count_)
@@ -106,7 +116,7 @@ public:
         current += bytes;
         T* pret = reinterpret_cast<T*>(return_memory);
         std::cout << "Alloc n=" << std::to_string(n) << " size =" << bytes <<
-                     " bytes." << "adress " << pret << std::endl;
+                     " bytes." << "adress " << pret << " counter = " << std::to_string(*counter) << std::endl;
 
         return pret;
     }
@@ -124,9 +134,9 @@ public:
     }
     void deleter()
     {
-        std::cout << "ArenaAllocator deleter. counter = " << std::to_string(*counter) << std::endl;
-        (*counter)--;
 
+        (*counter)--;
+        std::cout << "ArenaAllocator deleter. counter = " << std::to_string(*counter) << std::endl;
         if(*counter == 0)
         {
             std::cout << "ArenaAllocator deleter counter =0." << std::endl;
@@ -134,9 +144,13 @@ public:
             delete counter;
         }
     }
+    ArenaAllocator select_on_container_copyconstruction() const
+    {
+        return ArenaAllocator();
+    }
     ~ArenaAllocator()
     {
-        std::cout << "ArenaAllocator dtor." << std::endl;
+        std::cout << "ArenaAllocator dtor.counter = " << std::to_string(*counter) << std::endl;
         deleter();
     }
 
@@ -151,7 +165,7 @@ public:
 
     template<typename U>
     void destroy(U* p) noexcept {
-        std::cout << "dtor adr " << p << std::endl;
+        std::cout << "dtor adr=" << p << std::endl;
         p->~U();
     }
 
