@@ -62,7 +62,8 @@ public:
     }
 };
 
-template <class T>
+template <class T, size_t N>
+//template <typename T, size_t N>
 class ArenaAllocator
 {
 
@@ -74,10 +75,11 @@ public:
     size_t count = 10;
 
     using value_type = T;
-    ArenaAllocator() noexcept {
-        //
+    //using c = n;
+    /*ArenaAllocator() noexcept {
+
     }
-    template <class U> ArenaAllocator  (const ArenaAllocator<U>& a) noexcept {
+    template <class U, size_t x> ArenaAllocator  (const ArenaAllocator<U, x>& a) noexcept {
         //ArenaAllocator<U>;
         std::cout << "ArenaAllocator Templ" << std::endl;
         size = a.size;
@@ -87,7 +89,7 @@ public:
         (*counter2)++;
         counter = counter2;
 
-    }
+    }*/
 
     ArenaAllocator(size_t count_)
     {
@@ -109,13 +111,13 @@ public:
     {
         operator delete(start);
     }*/
-    T* allocate(std::size_t n)
+    T* allocate()//std::size_t N)
     {
-        std::size_t bytes = n * sizeof(T);
+        std::size_t bytes = N * sizeof(T);
         auto return_memory = current;
         current += bytes;
         T* pret = reinterpret_cast<T*>(return_memory);
-        std::cout << "Alloc n=" << std::to_string(n) << " size =" << bytes <<
+        std::cout << "Alloc n=" << std::to_string(N) << " size =" << bytes <<
                      " bytes." << "adress " << pret << " counter = " << std::to_string(*counter) << std::endl;
 
         return pret;
@@ -169,10 +171,11 @@ public:
         p->~U();
     }
 
-    template<class U>
+    template<class U, size_t k>
     struct rebind {
-        typedef ArenaAllocator<U> other;
+        typedef ArenaAllocator<U, k> other;
     };
+
 
     using propagate_on_container_copy_assignment = std::true_type;
     using propagate_on_container_move_assignment = std::false_type;
@@ -180,14 +183,14 @@ public:
 
 };
 
-template <class T, class U>
-constexpr bool operator== (const ArenaAllocator<T>& a1, const ArenaAllocator<U>& a2) noexcept
+template <class T, class U, size_t n>
+constexpr bool operator== (const ArenaAllocator<T,n>& a1, const ArenaAllocator<U,n>& a2) noexcept
 {
     return a1.start == a2.start;
 }
 
-template <class T, class U>
-constexpr bool operator!= (const ArenaAllocator<T>& a1, const ArenaAllocator<U>& a2) noexcept
+template <class T, class U, size_t n>
+constexpr bool operator!= (const ArenaAllocator<T,n>& a1, const ArenaAllocator<U,n>& a2) noexcept
 {
     return a1.start != a2.start;
 }

@@ -12,7 +12,7 @@ int main()
     try
         {
 
-        std::map<int, int> map1;
+        /*std::map<int, int> map1;
 
         for(int i=0; i<10;++i){
             std::pair<int, int> pair = {i, factorial(i)};
@@ -23,11 +23,19 @@ int main()
         {
             std::cout << item.first << " " << item.second << std::endl;
         }
-        std::cout << "1----------" << std::endl;
+        std::cout << "1----------" << std::endl;*/
         //std::map<int, int, std::less<>, LoggingAllocator<int>> map2;
 
-        ArenaAllocator<std::pair<const int, int>> alloc(50);//200
-        std::map<int, int, std::less<int>, ArenaAllocator<std::pair<const int, int>>> map2{alloc};
+        //ArenaAllocator<std::pair<const int, int>> alloc(50);//;//200
+
+        // Дай мне мой же аллокатор, но перенастроенный на тип узла
+        //typedef typename MyAllocator<int>::rebind<ListNode<int>>::other NodeAllocator;
+        //NodeAllocator nodeAlloc;  // теперь аллоцирует ListNode<int>, а не int
+
+        //typedef ArenaAllocator<int, 50>::rebind<std::pair<const int, int>,50>::other PairAllocator;
+        //std::map<int, int, std::less<int>, PairAllocator> map2;
+
+        std::map<int, int, std::less<int>, ArenaAllocator<std::pair<const int, int>, 50>> map2;//{alloc};
 
         for(int i=0; i<10;++i){
             map2[i] = factorial(i);
@@ -38,7 +46,8 @@ int main()
         }
 
 
-        std::cout << "2----------" << std::endl;
+
+        /*std::cout << "2----------" << std::endl;
         MyVector<int> vec;
         for(int i=0; i<10;++i){
             vec.push_back(i);
@@ -60,7 +69,7 @@ int main()
         for (const auto& elem : vec2) {
             std::cout << elem << " ";
         }
-        std::cout << "4----------" << std::endl;
+        std::cout << "4----------" << std::endl;*/
     }
     catch(const std::exception &e)
     {
