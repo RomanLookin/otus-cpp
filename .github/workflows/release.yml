@@ -5,7 +5,7 @@ on:
     branches:
       - HW4_v1
 env:
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "false"
   
 jobs:
   build:
