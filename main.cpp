@@ -1,83 +1,125 @@
 #include <iostream>
-#include <cstdlib>
+#include <type_traits>
 #include <vector>
 #include <list>
-#include <map>
 #include <utility>
+#pragma once
+#include <string>
+#include <tuple>
 
-#include "allocator.h"
 
-int main()
+
+namespace Impl
 {
-    try
-        {
+template <typename NotString> inline constexpr bool isString  = false;
+template <> inline constexpr bool isString<std::string>       = true;
+template <> inline constexpr bool isString<char*>             = true;
+template <> inline constexpr bool isString<const char*>       = true;
+template <> inline constexpr bool isString<const char* const> = true;
+template <> inline constexpr bool isString<std::string_view>  = true;
 
-        /*std::map<int, int> map1;
-
-        for(int i=0; i<10;++i){
-            std::pair<int, int> pair = {i, factorial(i)};
-            map1.insert(pair);
-
-        }
-        for(const auto& item : map1)
-        {
-            std::cout << item.first << " " << item.second << std::endl;
-        }
-        std::cout << "1----------" << std::endl;*/
-        //std::map<int, int, std::less<>, LoggingAllocator<int>> map2;
-
-        //ArenaAllocator<std::pair<const int, int>> alloc(50);//;//200
-
-        // Дай мне мой же аллокатор, но перенастроенный на тип узла
-        //typedef typename MyAllocator<int>::rebind<ListNode<int>>::other NodeAllocator;
-        //NodeAllocator nodeAlloc;  // теперь аллоцирует ListNode<int>, а не int
-
-        //typedef ArenaAllocator<int, 50>::rebind<std::pair<const int, int>,50>::other PairAllocator;
-        //std::map<int, int, std::less<int>, PairAllocator> map2;
-
-        std::map<int, int, std::less<int>, ArenaAllocator<std::pair<const int, int>, 50>> map2;//{alloc};
-
-        for(int i=0; i<10;++i){
-            map2[i] = factorial(i);
-        }
-        for(const auto& item : map2)
-        {
-            std::cout << item.first << " " << item.second << std::endl;
-        }
+template <std::size_t N> inline constexpr bool isString<char[N]> = true;
+}
 
 
+/*template <typename Object,
+          typename = decltype(std::declval<Object>().to_string())>
+std::string makeString(const Object& object)
+{
+    return object.to_string();
+}*/
 
-        /*std::cout << "2----------" << std::endl;
-        MyVector<int> vec;
-        for(int i=0; i<10;++i){
-            vec.push_back(i);
-        }
+namespace Impl { bool acceptNumber(int); }
 
-        for (const auto& elem : vec) {
-            std::cout << elem << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "3----------" << std::endl;
-        ArenaAllocator<int> alloc2(124);
-        std::vector<int, ArenaAllocator<int>> vec2{alloc2};
+// (2)
+template <typename Numeric>
+std::string makeString(Numeric value,
+                       decltype(Impl::acceptNumber(value))* = nullptr)
+{
 
-        for(int i=0; i<10;++i){
-            std::cout << "add element to vector " << std::to_string(i) << std::endl;
-            vec2.push_back(i);
-        }
+    std::vector<unsigned int> vc;
+    size_t count_byte = sizeof(Numeric);
+    long long mask = 0xff;
 
-        for (const auto& elem : vec2) {
-            std::cout << elem << " ";
-        }
-        std::cout << "4----------" << std::endl;*/
+
+    for(int l=0; l< count_byte;l++){
+
+        unsigned per = (value & mask) >> (l*8);
+        vc.push_back(per);
+        mask = mask * 256;
     }
-    catch(const std::exception &e)
+    std::string out_str;
+    for(int l=vc.size()-1;l>=0;l--){
+        out_str += std::to_string(vc.at(l));
+
+        if(l!=0)out_str += ".";
+    }
+
+    std::cout << out_str << std::endl;
+    //return out_str;
+}
+
+template <typename Iterable>
+auto makeString(const Iterable& iterable)
+    -> std::enable_if_t<!Impl::isString<Iterable>,
+        decltype(makeString(*std::begin(iterable)))> //decltype(makeString(*std::begin(iterable)))
+{
+    std::string result;
+    for (const auto& i : iterable)
     {
-        std::cerr << e.what() << std::endl;
+        if (!result.empty())
+            result += '.';
+        result += std::to_string(i);//makeString(i);
     }
+
+    //return result;
+    std::cout << result << std::endl;
+}
+
+template <typename String>
+auto makeString(const String& s)
+    -> std::enable_if_t<Impl::isString<String>, std::string>
+{
+    std::cout <<  std::string(s);
+}
+
+
+/*template <typename T>
+void printElem(const T& x) {
+    std::cout << std::to_string(x) << '.';
+};
+
+template <typename tuple, std::size_t... Is>
+void printTupleManual(const tuple& tp, std::index_sequence<Is...>) {
+    (printElem(std::get<Is>(tp)), ...);
+}
+
+template <typename tuple, std::size_t TupSize = std::tuple_size_v<tuple>>
+void makeString(tuple tp){ //const tuple& tp) {
+    printTupleManual(tp, std::make_index_sequence<TupSize>{});
+}*/
+
+
+
+
+
+int main(int argc, char** argv)
+{
+
+
+     //std::tuple<int> tp {123, 456, 789, 0};
+    /*makeString<int8_t>(-1);
+    makeString<int16_t>(0);
+    makeString<int32_t>(2130706433);
+    makeString<int64_t>(8875824491850138409);
+    makeString("Hello, World!");*/
+    //makeString(std::make_tuple(123, 456, 789, 0));//tp);
+
+
+    makeString(argv[1]);
+
 
 
 
     return 0;
-
 }
