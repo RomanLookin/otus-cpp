@@ -11,6 +11,52 @@ add_executable(${PROJECT_NAME} "main.cpp")
 set(CMAKE_CXX_EXTENSIONS OFF)      # no vendor-specific extensions
 set_property(TARGET print_ip PROPERTY CXX_STANDARD 20)
 
+if(WITH_BOOST_TEST)
+    find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+    add_executable(test_version test_version.cpp)
+
+    set_target_properties(test_version PROPERTIES
+        CXX_STANDARD 14
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    set_target_properties(test_version PROPERTIES
+        COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
+        INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
+    )
+
+    target_link_libraries(test_version
+        ${Boost_LIBRARIES}
+        helloworld
+    )
+endif()
+
+if (MSVC)
+    target_compile_options(helloworld_cli PRIVATE
+        /W4
+    )
+    target_compile_options(helloworld PRIVATE
+        /W4
+    )
+    if(WITH_BOOST_TEST)
+        target_compile_options(test_version PRIVATE
+            /W4
+        )
+    endif()
+else ()
+    target_compile_options(print_ip PRIVATE
+        -Wall -Wextra -pedantic -Werror
+    )
+    #target_compile_options(helloworld PRIVATE
+    #    -Wall -Wextra -pedantic -Werror
+    #)
+    if(WITH_BOOST_TEST)
+        target_compile_options(test_version PRIVATE
+            -Wall -Wextra -pedantic -Werror
+        )
+    endif()
+endif()
+
 install(TARGETS print_ip RUNTIME DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
