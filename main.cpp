@@ -3,7 +3,7 @@
 #include <vector>
 #include <list>
 #include <utility>
-//#pragma once
+#pragma once
 #include <string>
 #include <tuple>
 
@@ -80,7 +80,7 @@ template <typename String>
 auto makeString(const String& s)
     -> std::enable_if_t<Impl::isString<String>, std::string>
 {
-    std::cout <<  std::string(s);
+    std::cout <<  std::string(s) << std::endl;
 }
 
 
@@ -110,6 +110,8 @@ int main()
     makeString<int32_t>(2130706433);
     makeString<int64_t>(8875824491850138409);
     makeString("Hello, World!");
+    makeString(std::vector<int>{100, 200, 300, 400}); 
+    makeString(std::list<short>{400, 300, 200, 100});
     //makeString(std::make_tuple(123, 456, 789, 0));//tp);
     return 0;
 }
