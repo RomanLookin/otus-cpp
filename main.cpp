@@ -33,7 +33,7 @@ namespace Impl { bool acceptNumber(int); }
 
 // (2)
 template <typename Numeric>
-std::string makeString(Numeric value,
+auto makeString(Numeric value,
                        decltype(Impl::acceptNumber(value))* = nullptr)
 {
 
