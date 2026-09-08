@@ -103,23 +103,13 @@ void makeString(tuple tp){ //const tuple& tp) {
 
 
 
-int main(int argc, char** argv)
+int main()
 {
-
-
-     //std::tuple<int> tp {123, 456, 789, 0};
-    /*makeString<int8_t>(-1);
+    makeString<int8_t>(-1);
     makeString<int16_t>(0);
     makeString<int32_t>(2130706433);
     makeString<int64_t>(8875824491850138409);
-    makeString("Hello, World!");*/
+    makeString("Hello, World!");
     //makeString(std::make_tuple(123, 456, 789, 0));//tp);
-
-
-    makeString(argv[1]);
-
-
-
-
     return 0;
 }
