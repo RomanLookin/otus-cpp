@@ -3,7 +3,7 @@
 #include <vector>
 #include <list>
 #include <utility>
-#pragma once
+//#pragma once
 #include <string>
 #include <tuple>
 
@@ -22,12 +22,12 @@ template <std::size_t N> inline constexpr bool isString<char[N]> = true;
 }
 
 
-/*template <typename Object,
+template <typename Object,
           typename = decltype(std::declval<Object>().to_string())>
 std::string makeString(const Object& object)
 {
     return object.to_string();
-}*/
+}
 
 namespace Impl { bool acceptNumber(int); }
 
@@ -55,8 +55,7 @@ auto makeString(Numeric value,
         if(l!=0)out_str += ".";
     }
 
-    std::cout << out_str << std::endl;
-    //return out_str;
+    return out_str;
 }
 
 template <typename Iterable>
@@ -72,15 +71,15 @@ auto makeString(const Iterable& iterable)
         result += std::to_string(i);//makeString(i);
     }
 
-    //return result;
-    std::cout << result << std::endl;
+    return result;
+    
 }
 
 template <typename String>
 auto makeString(const String& s)
     -> std::enable_if_t<Impl::isString<String>, std::string>
 {
-    std::cout <<  std::string(s) << std::endl;
+    return s;
 }
 
 
@@ -105,13 +104,13 @@ void makeString(tuple tp){ //const tuple& tp) {
 
 int main()
 {
-    makeString<int8_t>(-1);
-    makeString<int16_t>(0);
-    makeString<int32_t>(2130706433);
-    makeString<int64_t>(8875824491850138409);
-    makeString("Hello, World!");
-    makeString(std::vector<int>{100, 200, 300, 400}); 
-    makeString(std::list<short>{400, 300, 200, 100});
+   std::cout << makeString<int8_t>(-1) << std::endl;
+    std::cout << makeString<int16_t>(0) << std::endl;
+    std::cout << makeString<int32_t>(2130706433) << std::endl;
+    std::cout << makeString<int64_t>(8875824491850138409) << std::endl;
+    std::cout << makeString("Hello, World!") << std::endl;
+    std::cout << makeString(std::vector<int>{100, 200, 300, 400}) << std::endl; 
+    std::cout << makeString(std::list<short>{400, 300, 200, 100}) << std::endl;
     //makeString(std::make_tuple(123, 456, 789, 0));//tp);
     return 0;
 }
