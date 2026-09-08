@@ -42,7 +42,7 @@ auto makeString(Numeric value,
     long long mask = 0xff;
 
 
-    for(int l=0; l< count_byte;l++){
+    for(size_t l=0; l< count_byte;l++){
 
         unsigned per = (value & mask) >> (l*8);
         vc.push_back(per);
