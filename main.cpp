@@ -27,6 +27,7 @@ int main()
         //std::map<int, int, std::less<>, LoggingAllocator<int>> map2;
 
         //ArenaAllocator<std::pair<const int, int>> alloc(50);//;//200
+        //std::map<int, int, std::less<int>, alloc> map2;
 
         // Дай мне мой же аллокатор, но перенастроенный на тип узла
         //typedef typename MyAllocator<int>::rebind<ListNode<int>>::other NodeAllocator;
@@ -35,7 +36,8 @@ int main()
         //typedef ArenaAllocator<int, 50>::rebind<std::pair<const int, int>,50>::other PairAllocator;
         //std::map<int, int, std::less<int>, PairAllocator> map2;
 
-        std::map<int, int, std::less<int>, ArenaAllocator<std::pair<const int, int>, 50>> map2;//{alloc};
+        //std::map<int, int, std::less<int>, ArenaAllocator<std::pair<const int, int>, 50>> map2;//{alloc};
+        std::map<int, int, std::less<int>, ArenaAllocator<std::pair<const int, int>, 10>> map2;
 
         for(int i=0; i<10;++i){
             map2[i] = factorial(i);

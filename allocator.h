@@ -76,10 +76,21 @@ public:
 
     using value_type = T;
     //using c = n;
-    /*ArenaAllocator() noexcept {
+    ArenaAllocator() {
+        count = N;
+        size=count * sizeof(T);
+        start=static_cast<char*>(operator new(count * sizeof(T)));
+        current=start;
+        counter=new int(1);
 
+
+        T* pret = reinterpret_cast<T*>(start);
+        std::cout << "ArenaAllocator ctor. count = " << std::to_string(count)
+                  << " " << std::to_string(count * sizeof(T)) << " bytes. "
+                     " adr" << pret << std::endl;
     }
-    template <class U, size_t x> ArenaAllocator  (const ArenaAllocator<U, x>& a) noexcept {
+    /*template <class U, size_t x> ArenaAllocator  (const ArenaAllocator<U, x>& a) noexcept {
+    //template <class U> ArenaAllocator  (const ArenaAllocator<U, N>& a) noexcept {
         //ArenaAllocator<U>;
         std::cout << "ArenaAllocator Templ" << std::endl;
         size = a.size;
@@ -111,13 +122,14 @@ public:
     {
         operator delete(start);
     }*/
-    T* allocate()//std::size_t N)
+    //T* allocate()//std::size_t N)
+    T* allocate(std::size_t k)
     {
-        std::size_t bytes = N * sizeof(T);
+        std::size_t bytes = k * sizeof(T);
         auto return_memory = current;
         current += bytes;
         T* pret = reinterpret_cast<T*>(return_memory);
-        std::cout << "Alloc n=" << std::to_string(N) << " size =" << bytes <<
+        std::cout << "Alloc n=" << std::to_string(k) << " size =" << bytes <<
                      " bytes." << "adress " << pret << " counter = " << std::to_string(*counter) << std::endl;
 
         return pret;
@@ -171,9 +183,10 @@ public:
         p->~U();
     }
 
-    template<class U, size_t k>
+    template<class U>
     struct rebind {
-        typedef ArenaAllocator<U, k> other;
+    //-        typedef ArenaAllocator<\U,\k> other;
+           typedef ArenaAllocator<U, N> other;
     };
 
 
