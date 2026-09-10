@@ -73,7 +73,7 @@ public:
     char* current;
     int* counter;
     size_t count = 10;
-
+    T* end;
     using value_type = T;
     //using c = n;
     ArenaAllocator() {
@@ -85,11 +85,12 @@ public:
 
 
         T* pret = reinterpret_cast<T*>(start);
+        end = reinterpret_cast<T*>(start +size);
         std::cout << "ArenaAllocator ctor. count = " << std::to_string(count)
                   << " " << std::to_string(count * sizeof(T)) << " bytes. "
-                     " adr" << pret << std::endl;
+                     " adr" << pret << " end" << end << std::endl;
     }
-    /*template <class U, size_t x> ArenaAllocator  (const ArenaAllocator<U, x>& a) noexcept {
+    template <class U, size_t x> ArenaAllocator  (const ArenaAllocator<U, x>& a) noexcept {
     //template <class U> ArenaAllocator  (const ArenaAllocator<U, N>& a) noexcept {
         //ArenaAllocator<U>;
         std::cout << "ArenaAllocator Templ" << std::endl;
@@ -100,7 +101,7 @@ public:
         (*counter2)++;
         counter = counter2;
 
-    }*/
+    }
 
     ArenaAllocator(size_t count_)
     {
@@ -128,11 +129,17 @@ public:
         std::size_t bytes = k * sizeof(T);
         auto return_memory = current;
         current += bytes;
-        T* pret = reinterpret_cast<T*>(return_memory);
-        std::cout << "Alloc n=" << std::to_string(k) << " size =" << bytes <<
-                     " bytes." << "adress " << pret << " counter = " << std::to_string(*counter) << std::endl;
+        T* pret_end = reinterpret_cast<T*>(return_memory+bytes);
+        if(pret_end <= end){
 
-        return pret;
+            T* pret = reinterpret_cast<T*>(return_memory);
+            std::cout << "Alloc n=" << std::to_string(k) << " size =" << bytes << " bytes." <<
+                     "adress " << pret << " counter = " << std::to_string(*counter) <<
+                     /*"current = " << std::to_string(current) <<*/ std::endl;
+
+            return pret;
+        }
+        else throw std::bad_alloc();
     }
     void deallocate(T*, std::size_t) noexcept
     {}
