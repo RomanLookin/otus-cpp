@@ -83,20 +83,23 @@ auto makeString(const String& s)
 }
 
 
-/*template <typename T>
-void printElem(const T& x) {
-    std::cout << std::to_string(x) << '.';
-};
 
-template <typename tuple, std::size_t... Is>
-void printTupleManual(const tuple& tp, std::index_sequence<Is...>) {
-    (printElem(std::get<Is>(tp)), ...);
+template <typename... Args>
+void printImpl(const Args&... tupleArgs) {
+    size_t index = 0;
+    auto printElem = [&index](const auto& x) {
+        if (index++ > 0)
+            std::cout << ".";
+        std::cout << x;
+        };
+
+    (printElem(tupleArgs), ...);
 }
 
-template <typename tuple, std::size_t TupSize = std::tuple_size_v<tuple>>
-void makeString(tuple tp){ //const tuple& tp) {
-    printTupleManual(tp, std::make_index_sequence<TupSize>{});
-}*/
+template <typename... Args>
+void makeString(const std::tuple<Args...>& tp) {
+    std::apply(printImpl<Args...>, tp);
+}
 
 
 
@@ -104,13 +107,15 @@ void makeString(tuple tp){ //const tuple& tp) {
 
 int main()
 {
-   std::cout << makeString<int8_t>(-1) << std::endl;
+    std::cout << makeString<int8_t>(-1) << std::endl;
     std::cout << makeString<int16_t>(0) << std::endl;
     std::cout << makeString<int32_t>(2130706433) << std::endl;
     std::cout << makeString<int64_t>(8875824491850138409) << std::endl;
     std::cout << makeString("Hello, World!") << std::endl;
     std::cout << makeString(std::vector<int>{100, 200, 300, 400}) << std::endl; 
     std::cout << makeString(std::list<short>{400, 300, 200, 100}) << std::endl;
-    //makeString(std::make_tuple(123, 456, 789, 0));//tp);
+
+    makeString(std::make_tuple(123, 456, 789, 0));
+
     return 0;
 }
