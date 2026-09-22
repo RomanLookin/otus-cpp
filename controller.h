@@ -1,17 +1,30 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 //Forward Declaration
+#include <memory>
+
 class Model;
 class View;
 class QString;
 
-class Controller {
+class iController
+{
+
 public:
-  Controller(Model* m);
+    //explicit iView(QWidget *parent = nullptr);
+    virtual void  OnConvertButtonClicked() = 0;
+    virtual ~iController() = default;
+};
+
+class Controller : public iController {
+public:
+  Controller(Model* m, View* v);
+  Controller(std::shared_ptr<Model> m, std::shared_ptr<View> v);
   virtual ~Controller();
-  void OnConvertButtonClicked(View* v);
-  void OnClearButtonClicked(View* v);
+  void OnConvertButtonClicked() override;//View* v);
+  void OnClearButtonClicked();//View* v);
 private:
-  Model* model;
+  std::shared_ptr<Model> model;
+  std::shared_ptr<View> view;
 };
 #endif // CONTROLLER_H

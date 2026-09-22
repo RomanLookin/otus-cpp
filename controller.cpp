@@ -3,16 +3,18 @@
 #include "view.h"
 #include <QString>
 
-Controller::Controller(Model* m):model(m){}
+
+Controller::Controller(Model* m, View* v):model(m), view(v){}
+Controller::Controller(std::shared_ptr<Model> m, std::shared_ptr<View> v):model(m), view(v){}
 Controller::~Controller(){}
-void Controller::OnConvertButtonClicked(View* v) {
-  QString rub = v->getRub();
-  model->ConvertRubIntoDollor(rub.toFloat());
+void Controller::OnConvertButtonClicked(){//View* v) {
+  QString ruppes = view->getRuppes();
+  model->ConvertRuppesIntoDollor(ruppes.toFloat());
   QString ds = QString::number(model->GetDollorValue());
-  v->setDollor(ds);
+  view->setDollor(ds);
 }
-void Controller::OnClearButtonClicked(View* v) {
-  v->setDollor(QString());
-  v->setRub(QString());
+void Controller::OnClearButtonClicked(){//View* v) {
+  view->setDollor(QString());
+  view->setRuppes(QString());
   model->clear();
 }
