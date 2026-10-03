@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(print_ip)
+project(hw6)
 option(WITH_BOOST_TEST "Whether to build Boost test" OFF)
 add_executable(${PROJECT_NAME} "main.cpp")
 #set_target_properties(
@@ -9,7 +9,7 @@ add_executable(${PROJECT_NAME} "main.cpp")
 #        CXX_STANDARD_REQUIRED ON
 #)
 set(CMAKE_CXX_EXTENSIONS OFF)      # no vendor-specific extensions
-set_property(TARGET print_ip PROPERTY CXX_STANDARD 20)
+set_property(TARGET hw6 PROPERTY CXX_STANDARD 20)
 
 if(WITH_BOOST_TEST)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
@@ -44,7 +44,7 @@ if (MSVC)
         )
     endif()
 else ()
-    target_compile_options(print_ip PRIVATE
+    target_compile_options(hw6 PRIVATE
         -Wall -Wextra -pedantic -Werror
     )
     #target_compile_options(helloworld PRIVATE
@@ -57,7 +57,7 @@ else ()
     endif()
 endif()
 
-install(TARGETS print_ip RUNTIME DESTINATION bin)
+install(TARGETS hw6 RUNTIME DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
