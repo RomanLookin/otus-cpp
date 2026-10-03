@@ -22,7 +22,7 @@ public:
                 T get(int row, int col)// const;
                 {
                     if(rows.size() !=0){
-                        for(int ind=0;ind<rows.size();ind++){
+                        for(size_t ind=0;ind<rows.size();ind++){
                             if((rows.at(ind) == row) && (cols.at(ind) == col))
                                 return vals.at(ind);
 
@@ -42,7 +42,7 @@ public:
                     }
             else{
                 bool add_v = true;
-                        for(int ind=0;ind<rows.size();ind++){
+                        for(size_t ind=0;ind<rows.size();ind++){
 
                             if((rows.at(ind) == row) && (cols.at(ind) == col)){
                                 if(val != 0){
@@ -84,7 +84,7 @@ public:
         friend std::ostream& operator << (std::ostream& os, const SparseMatrix<X> & matrix)
         {
             if(matrix.rows.size() !=0){
-                for(int ind=0;ind<matrix.rows.size();ind++){
+                for(size_t ind=0;ind<matrix.rows.size();ind++){
                     os << to_string(matrix.vals.at(ind)) << " " <<
                                  to_string(matrix.rows.at(ind)) << " " <<
                                  to_string(matrix.cols.at(ind)) << std::endl;
