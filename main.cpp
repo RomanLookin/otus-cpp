@@ -1,121 +1,159 @@
 #include <iostream>
-#include <type_traits>
 #include <vector>
-#include <list>
-#include <utility>
-//#pragma once
-#include <string>
-#include <tuple>
+#include <cassert>
+
+using namespace std;
 
 
-
-namespace Impl
+template<typename T>
+class SparseMatrix
 {
-template <typename NotString> inline constexpr bool isString  = false;
-template <> inline constexpr bool isString<std::string>       = true;
-template <> inline constexpr bool isString<char*>             = true;
-template <> inline constexpr bool isString<const char*>       = true;
-template <> inline constexpr bool isString<const char* const> = true;
-template <> inline constexpr bool isString<std::string_view>  = true;
+    private:
+            int m, n;
+            std::vector<T> vals;//* vals;
+            std::vector<int> rows, cols;//* rows, * cols;
 
-template <std::size_t N> inline constexpr bool isString<char[N]> = true;
-}
+public:
+                // === CREATION ==============================================
+                SparseMatrix(int lines = 0, int columns = 0)
+                    : m(lines), n(columns){}; //
+                SparseMatrix(int n); // square matrix n×n
+                
+                T get(int row, int col)// const;
+                {
+                    if(rows.size() !=0){
+                        for(int ind=0;ind<rows.size();ind++){
+                            if((rows.at(ind) == row) && (cols.at(ind) == col))
+                                return vals.at(ind);
 
+                        }
+                    }
+                    return 0;
 
-template <typename Object,
-          typename = decltype(std::declval<Object>().to_string())>
-std::string makeString(const Object& object)
-{
-    return object.to_string();
-}
+                }
+        //SparseMatrix & set(T val, int row, int col)//{
+        void set(T val, int row, int col)//;
+        {
+            int remove_ind =-1;
+            if((rows.empty()) && (cols.empty()) && (val != 0)){
+                        rows.push_back(row);
+                        cols.push_back(col);
+                        vals.push_back(val);
+                    }
+            else{
+                bool add_v = true;
+                        for(int ind=0;ind<rows.size();ind++){
 
-namespace Impl { bool acceptNumber(int); }
-
-// (2)
-template <typename Numeric>
-auto makeString(Numeric value,
-                       decltype(Impl::acceptNumber(value))* = nullptr)
-{
-
-    std::vector<unsigned int> vc;
-    size_t count_byte = sizeof(Numeric);
-    long long mask = 0xff;
-
-
-    for(size_t l=0; l< count_byte;l++){
-
-        unsigned per = (value & mask) >> (l*8);
-        vc.push_back(per);
-        mask = mask * 256;
-    }
-    std::string out_str;
-    for(int l=vc.size()-1;l>=0;l--){
-        out_str += std::to_string(vc.at(l));
-
-        if(l!=0)out_str += ".";
-    }
-
-    return out_str;
-}
-
-template <typename Iterable>
-auto makeString(const Iterable& iterable)
-    -> std::enable_if_t<!Impl::isString<Iterable>,
-        decltype(makeString(*std::begin(iterable)))> //decltype(makeString(*std::begin(iterable)))
-{
-    std::string result;
-    for (const auto& i : iterable)
-    {
-        if (!result.empty())
-            result += '.';
-        result += std::to_string(i);//makeString(i);
-    }
-
-    return result;
-    
-}
-
-template <typename String>
-auto makeString(const String& s)
-    -> std::enable_if_t<Impl::isString<String>, std::string>
-{
-    return s;
-}
+                            if((rows.at(ind) == row) && (cols.at(ind) == col)){
+                                if(val != 0){
+                                    vals.at(ind) = val;
 
 
+                                }
+                                else{
+                                    remove_ind = ind;
 
-template <typename... Args>
-void printImpl(const Args&... tupleArgs) {
-    size_t index = 0;
-    auto printElem = [&index](const auto& x) {
-        if (index++ > 0)
-            std::cout << ".";
-        std::cout << x;
+                                }
+                                add_v = false;
+                                //break;
+                            }
+                        }
+                        if(add_v && (val != 0)){
+                            rows.push_back(row);
+                            cols.push_back(col);
+                            vals.push_back(val);
+                        }
+                        if(remove_ind != -1){
+                            auto iterr = rows.cbegin();
+                            rows.erase(iterr + remove_ind);
+                            auto iterc = cols.cbegin();
+                            cols.erase(iterc + remove_ind);
+                            auto iterv = vals.cbegin();
+                            vals.erase(iterv + remove_ind);
+                        }
+
+                    }
+
+                }
+
+        int size(){
+            return rows.size();
+        }
+
+        template<typename X>
+        friend std::ostream& operator << (std::ostream& os, const SparseMatrix<X> & matrix)
+        {
+            if(matrix.rows.size() !=0){
+                for(int ind=0;ind<matrix.rows.size();ind++){
+                    os << to_string(matrix.vals.at(ind)) << " " <<
+                                 to_string(matrix.rows.at(ind)) << " " <<
+                                 to_string(matrix.cols.at(ind)) << std::endl;
+                    //if((rows->at(ind) == row) && (cols->at(ind) == col))
+                        //return vals->at(ind);
+
+                }
+            }
+            return os;
+        }
+
         };
 
-    (printElem(tupleArgs), ...);
-}
-
-template <typename... Args>
-void makeString(const std::tuple<Args...>& tp) {
-    std::apply(printImpl<Args...>, tp);
-}
-
-
+//template<typename T>
+class Matrix
+{
+    public:
+    Matrix();
+    //std::vector<T> vals;
+    //std::vector<int> vals;
 
 
+    //int& operator[](int x){return vals[x];}
+    /*Matrix & set(int val, int row, int col);
+    int get(int row, int col) const;*/
+
+    struct ProxyRow{
+        int* row;
+        int& operator[](int n){return row[n];}
+    };
+
+    std::vector<ProxyRow> vals;
+    std::vector<int> rows, cols;
+    //Matrix(int n); // square matrix n×n
+    //Matrix(int rows, int columns);
+    ProxyRow& operator[](int x){return vals[x];}
+
+//protected:
+    //int m, n;
+};
 
 int main()
 {
-    std::cout << makeString<int8_t>(-1) << std::endl;
-    std::cout << makeString<int16_t>(0) << std::endl;
-    std::cout << makeString<int32_t>(2130706433) << std::endl;
-    std::cout << makeString<int64_t>(8875824491850138409) << std::endl;
-    std::cout << makeString("Hello, World!") << std::endl;
-    std::cout << makeString(std::vector<int>{100, 200, 300, 400}) << std::endl; 
-    std::cout << makeString(std::list<short>{400, 300, 200, 100}) << std::endl;
+ 
 
-    makeString(std::make_tuple(123, 456, 789, 0));
+    SparseMatrix<int> sprsmtrx;
+    int matrix_size = 10;
+    for(int i=0;i<matrix_size;i++){
+        sprsmtrx.set(i, i, i);
+    }
+    for(int i=matrix_size-1;i>=0;i--){//9 8 .. 1 0
+        sprsmtrx.set(9-i, 9-i, i);
+    }
+    std::string line;
+    for(int nr=1;nr < 9;nr++){
+        for(int nc=1;nc < 9;nc++){
 
+            int val = sprsmtrx.get(nr, nc);
+            //if(val)
+                line += to_string(val)+" ";
+            //else
+            //    line += to_string(0)+" ";
+        }
+        std::cout << line << endl;
+        line.clear();
+
+    }
+    std::cout << to_string(sprsmtrx.size()) << endl;
+
+    cout << sprsmtrx;
     return 0;
 }
