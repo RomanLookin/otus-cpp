@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(hw6)
+project(bulk)
 option(WITH_BOOST_TEST "Whether to build Boost test" OFF)
 add_executable(${PROJECT_NAME} "main.cpp")
 #set_target_properties(
@@ -44,7 +44,7 @@ if (MSVC)
         )
     endif()
 else ()
-    target_compile_options(hw6 PRIVATE
+    target_compile_options(bulk PRIVATE
         -Wall -Wextra -pedantic -Werror
     )
     #target_compile_options(helloworld PRIVATE
@@ -57,7 +57,7 @@ else ()
     endif()
 endif()
 
-install(TARGETS hw6 RUNTIME DESTINATION bin)
+install(TARGETS bulk RUNTIME DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
