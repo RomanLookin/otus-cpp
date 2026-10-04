@@ -9,7 +9,7 @@ add_executable(${PROJECT_NAME} "main.cpp")
 #        CXX_STANDARD_REQUIRED ON
 #)
 set(CMAKE_CXX_EXTENSIONS OFF)      # no vendor-specific extensions
-set_property(TARGET hw6 PROPERTY CXX_STANDARD 20)
+set_property(TARGET bulk PROPERTY CXX_STANDARD 20)
 
 if(WITH_BOOST_TEST)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
