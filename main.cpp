@@ -15,7 +15,7 @@ void out_vect(vector<string>& vc, vector<time_t>& vt)
 
         if (file.is_open()) {
 
-            for(int n = 0;n < vc.size();n++){
+            for(size_t n = 0;n < vc.size();n++){
                 cout << vc[n];
                 file << vc[n];
                 if(n != vc.size()-1){
@@ -42,7 +42,7 @@ int main()
     vector<string> vec_str;
     vector<time_t> vec_time;
     bool dynamic_bloc = false;
-    int N = 3, count_block = 0;
+    unsigned int N = 3, count_block = 0;
     string line;
     getline(cin, line);
 
