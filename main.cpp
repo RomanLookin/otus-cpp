@@ -1,159 +1,95 @@
 #include <iostream>
+#include <string>
 #include <vector>
-#include <cassert>
+#include <ctime>
+#include <fstream>
 
 using namespace std;
 
-
-template<typename T>
-class SparseMatrix
+void out_vect(vector<string>& vc, vector<time_t>& vt)
 {
-    private:
-            int m, n;
-            std::vector<T> vals;//* vals;
-            std::vector<int> rows, cols;//* rows, * cols;
+    if((vc.size() != 0) && (vt.size() > 0)){
 
-public:
-                // === CREATION ==============================================
-                SparseMatrix(int lines = 0, int columns = 0)
-                    : m(lines), n(columns){}; //
-                SparseMatrix(int n); // square matrix n×n
-                
-                T get(int row, int col)// const;
-                {
-                    if(rows.size() !=0){
-                        for(size_t ind=0;ind<rows.size();ind++){
-                            if((rows.at(ind) == row) && (cols.at(ind) == col))
-                                return vals.at(ind);
+        string fname = "bulk"+to_string(vt.at(0))+".log";
+        ofstream file(fname);
 
-                        }
-                    }
-                    return 0;
+        if (file.is_open()) {
 
-                }
-        //SparseMatrix & set(T val, int row, int col)//{
-        void set(T val, int row, int col)//;
-        {
-            int remove_ind =-1;
-            if((rows.empty()) && (cols.empty()) && (val != 0)){
-                        rows.push_back(row);
-                        cols.push_back(col);
-                        vals.push_back(val);
-                    }
-            else{
-                bool add_v = true;
-                        for(size_t ind=0;ind<rows.size();ind++){
-
-                            if((rows.at(ind) == row) && (cols.at(ind) == col)){
-                                if(val != 0){
-                                    vals.at(ind) = val;
-
-
-                                }
-                                else{
-                                    remove_ind = ind;
-
-                                }
-                                add_v = false;
-                                //break;
-                            }
-                        }
-                        if(add_v && (val != 0)){
-                            rows.push_back(row);
-                            cols.push_back(col);
-                            vals.push_back(val);
-                        }
-                        if(remove_ind != -1){
-                            auto iterr = rows.cbegin();
-                            rows.erase(iterr + remove_ind);
-                            auto iterc = cols.cbegin();
-                            cols.erase(iterc + remove_ind);
-                            auto iterv = vals.cbegin();
-                            vals.erase(iterv + remove_ind);
-                        }
-
-                    }
-
-                }
-
-        int size(){
-            return rows.size();
-        }
-
-        template<typename X>
-        friend std::ostream& operator << (std::ostream& os, const SparseMatrix<X> & matrix)
-        {
-            if(matrix.rows.size() !=0){
-                for(size_t ind=0;ind<matrix.rows.size();ind++){
-                    os << to_string(matrix.vals.at(ind)) << " " <<
-                                 to_string(matrix.rows.at(ind)) << " " <<
-                                 to_string(matrix.cols.at(ind)) << std::endl;
-                    //if((rows->at(ind) == row) && (cols->at(ind) == col))
-                        //return vals->at(ind);
-
+            for(int n = 0;n < vc.size();n++){
+                cout << vc[n];
+                file << vc[n];
+                if(n != vc.size()-1){
+                    cout << ", ";
+                    file << ", ";
                 }
             }
-            return os;
+            cout << endl;
+            vc.clear();
+            vt.erase(vt.begin());
+
+            file.close();
+        //cout << "Запись прошла успешно!" << endl;
+        } else {
+            cout << "Ошибка при открытии файла!" << endl;
         }
 
-        };
+    }
 
-//template<typename T>
-class Matrix
-{
-    public:
-    Matrix();
-    //std::vector<T> vals;
-    //std::vector<int> vals;
-
-
-    //int& operator[](int x){return vals[x];}
-    /*Matrix & set(int val, int row, int col);
-    int get(int row, int col) const;*/
-
-    struct ProxyRow{
-        int* row;
-        int& operator[](int n){return row[n];}
-    };
-
-    std::vector<ProxyRow> vals;
-    std::vector<int> rows, cols;
-    //Matrix(int n); // square matrix n×n
-    //Matrix(int rows, int columns);
-    ProxyRow& operator[](int x){return vals[x];}
-
-//protected:
-    //int m, n;
-};
+}
 
 int main()
 {
- 
+    vector<string> vec_str;
+    vector<time_t> vec_time;
+    bool dynamic_bloc = false;
+    int N = 3, count_block = 0;
+    string line;
+    getline(cin, line);
 
-    SparseMatrix<int> sprsmtrx;
-    int matrix_size = 10;
-    for(int i=0;i<matrix_size;i++){
-        sprsmtrx.set(i, i, i);
-    }
-    for(int i=matrix_size-1;i>=0;i--){//9 8 .. 1 0
-        sprsmtrx.set(9-i, 9-i, i);
-    }
-    std::string line;
-    for(int nr=1;nr < 9;nr++){
-        for(int nc=1;nc < 9;nc++){
 
-            int val = sprsmtrx.get(nr, nc);
-            //if(val)
-                line += to_string(val)+" ";
-            //else
-            //    line += to_string(0)+" ";
+
+    while(line != "eof"){
+
+            if(line == "{"){
+
+                if(count_block == 0){
+                    out_vect(vec_str, vec_time);
+
+
+                    dynamic_bloc = true;
+                    std::time_t result = std::time(nullptr);
+                    vec_time.push_back(result);//std::asctime(std::localtime(&result)));
+                }
+                count_block++;
+
+                getline(cin, line);
+                continue;
+            }
+            if(line == "}"){
+                count_block--;
+                if(count_block == 0){
+                    out_vect(vec_str, vec_time);
+                    dynamic_bloc = false;
+                }
+                getline(cin, line);
+                continue;
+            }
+
+        vec_str.push_back(line);
+        if(vec_str.size() == 1){
+            std::time_t result = std::time(nullptr);
+            vec_time.push_back(result);//std::asctime(std::localtime(&result)));
         }
-        std::cout << line << endl;
-        line.clear();
+        if((vec_str.size() == N) && !dynamic_bloc){
+            out_vect(vec_str, vec_time);
+        }
 
+        getline(cin, line);
     }
-    std::cout << to_string(sprsmtrx.size()) << endl;
+    if(!dynamic_bloc){
+        out_vect(vec_str, vec_time);
+    }
 
-    cout << sprsmtrx;
     return 0;
 }
+
