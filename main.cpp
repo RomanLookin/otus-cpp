@@ -25,7 +25,7 @@ class Matrix
 
             
             if(!rowpm){
-                rowp = new vector<int>;
+                
                 rowpm = new map<int, int>;
             }
             else {
