@@ -28,9 +28,7 @@ class Matrix
                 
                 rowpm = new map<int, int>;
             }
-            else {
-                rowp->push_back(rowp->size());
-            }
+            
         }
         std::map<int, int>* rowpm=nullptr;
 
