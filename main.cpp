@@ -1,159 +1,137 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include <map>
+#include <tuple>
 
 using namespace std;
 
-
-template<typename T>
-class SparseMatrix
-{
-    private:
-            int m, n;
-            std::vector<T> vals;//* vals;
-            std::vector<int> rows, cols;//* rows, * cols;
-
-public:
-                // === CREATION ==============================================
-                SparseMatrix(int lines = 0, int columns = 0)
-                    : m(lines), n(columns){}; //
-                SparseMatrix(int n); // square matrix n×n
-                
-                T get(int row, int col)// const;
-                {
-                    if(rows.size() !=0){
-                        for(size_t ind=0;ind<rows.size();ind++){
-                            if((rows.at(ind) == row) && (cols.at(ind) == col))
-                                return vals.at(ind);
-
-                        }
-                    }
-                    return 0;
-
-                }
-        //SparseMatrix & set(T val, int row, int col)//{
-        void set(T val, int row, int col)//;
-        {
-            int remove_ind =-1;
-            if((rows.empty()) && (cols.empty()) && (val != 0)){
-                        rows.push_back(row);
-                        cols.push_back(col);
-                        vals.push_back(val);
-                    }
-            else{
-                bool add_v = true;
-                        for(size_t ind=0;ind<rows.size();ind++){
-
-                            if((rows.at(ind) == row) && (cols.at(ind) == col)){
-                                if(val != 0){
-                                    vals.at(ind) = val;
-
-
-                                }
-                                else{
-                                    remove_ind = ind;
-
-                                }
-                                add_v = false;
-                                //break;
-                            }
-                        }
-                        if(add_v && (val != 0)){
-                            rows.push_back(row);
-                            cols.push_back(col);
-                            vals.push_back(val);
-                        }
-                        if(remove_ind != -1){
-                            auto iterr = rows.cbegin();
-                            rows.erase(iterr + remove_ind);
-                            auto iterc = cols.cbegin();
-                            cols.erase(iterc + remove_ind);
-                            auto iterv = vals.cbegin();
-                            vals.erase(iterv + remove_ind);
-                        }
-
-                    }
-
-                }
-
-        int size(){
-            return rows.size();
-        }
-
-        template<typename X>
-        friend std::ostream& operator << (std::ostream& os, const SparseMatrix<X> & matrix)
-        {
-            if(matrix.rows.size() !=0){
-                for(size_t ind=0;ind<matrix.rows.size();ind++){
-                    os << to_string(matrix.vals.at(ind)) << " " <<
-                                 to_string(matrix.rows.at(ind)) << " " <<
-                                 to_string(matrix.cols.at(ind)) << std::endl;
-                    //if((rows->at(ind) == row) && (cols->at(ind) == col))
-                        //return vals->at(ind);
-
-                }
-            }
-            return os;
-        }
-
-        };
 
 //template<typename T>
 class Matrix
 {
     public:
-    Matrix();
-    //std::vector<T> vals;
-    //std::vector<int> vals;
+    Matrix(){
 
-
-    //int& operator[](int x){return vals[x];}
-    /*Matrix & set(int val, int row, int col);
-    int get(int row, int col) const;*/
-
-    struct ProxyRow{
-        int* row;
-        int& operator[](int n){return row[n];}
+        int sz = vals_mpp.size();
+        RowProxy* vrpp = new RowProxy;
+        vals_mpp[sz] =vrpp;
+        
     };
 
-    std::vector<ProxyRow> vals;
-    std::vector<int> rows, cols;
-    //Matrix(int n); // square matrix n×n
-    //Matrix(int rows, int columns);
-    ProxyRow& operator[](int x){return vals[x];}
+    struct RowProxy{
+        
+        RowProxy(){
 
-//protected:
-    //int m, n;
+            
+            if(!rowp){
+                rowp = new vector<int>;
+                rowpm = new map<int, int>;
+            }
+            else {
+                rowp->push_back(rowp->size());
+            }
+        }
+        std::map<int, int>* rowpm=nullptr;
+
+        int& operator[](int n){
+
+            auto it = rowpm->find(n);
+            if (it != rowpm->end()) {
+                return rowpm->at(n);
+            }
+            else{
+                rowpm->operator[](n) = 0;
+                return rowpm->at(n);
+            }
+
+            
+        }
+    };
+
+
+    std::map<int, RowProxy> vals_mp;
+    std::map<int, RowProxy*> vals_mpp;
+
+    std::vector<int> rows, cols;
+
+    RowProxy& operator[](int x){
+        auto it = vals_mpp.find(x);
+        if (it != vals_mpp.end()) {
+            return *vals_mpp[x];
+        } else {
+            RowProxy* vrpp = new RowProxy;
+            vals_mpp[x] =vrpp;
+            return *vrpp;
+        }
+
+    }
+    int size(){
+        int count_v = 0;
+        for (const auto& [numb, val] : vals_mpp) {
+            for (const auto& pair : *val->rowpm) {
+                if(pair.second != 0)count_v++;
+            }
+
+        }
+        return count_v;
+
+    }
+    auto begin() { return vals_mpp.begin(); }
+    auto cbegin() { return vals_mpp.begin(); }
+    auto end() { return vals_mpp.end(); }
+    auto cend() { return vals_mpp.end(); }
+
+    //template<typename X>
+    friend std::ostream& operator << (std::ostream& os, const Matrix& m)
+    {
+
+            for (const auto& [numb, val] : m.vals_mpp) {
+                    //std::cout << to_string(numb) << ":";// << to_string(val->rowp->size()) << endl;//": " << year << std::endl;
+                for (const auto& pair : *val->rowpm) {
+                    //std::cout << pair.first << ": " << pair.second << std::endl;
+                    if(pair.second != 0){
+                        os << to_string(numb) << to_string(pair.first) <<  to_string(pair.second) << endl;
+                    }
+                }
+            }
+
+
+
+
+        return os;
+
+
+
+    }
+
+protected:
+
 };
+
 
 int main()
 {
- 
 
-    SparseMatrix<int> sprsmtrx;
-    int matrix_size = 10;
-    for(int i=0;i<matrix_size;i++){
-        sprsmtrx.set(i, i, i);
+    Matrix m;
+    for(int l=0;l<10;l++)
+        m[l][l]=l;
+
+    for(int l=0;l<10;l++)
+        m[9-l][l]=9-l;
+
+    for(int k=1;k<9;k++){
+        for(int l=1;l<9;l++)
+            cout << to_string(m[k][l]) << " ";
+        cout << endl;
     }
-    for(int i=matrix_size-1;i>=0;i--){//9 8 .. 1 0
-        sprsmtrx.set(9-i, 9-i, i);
-    }
-    std::string line;
-    for(int nr=1;nr < 9;nr++){
-        for(int nc=1;nc < 9;nc++){
+    
+    cout << to_string(m.size()) << endl;
+    cout << m;
 
-            int val = sprsmtrx.get(nr, nc);
-            //if(val)
-                line += to_string(val)+" ";
-            //else
-            //    line += to_string(0)+" ";
-        }
-        std::cout << line << endl;
-        line.clear();
 
-    }
-    std::cout << to_string(sprsmtrx.size()) << endl;
 
-    cout << sprsmtrx;
-    return 0;
+     return 0;
 }
+
+
