@@ -24,7 +24,7 @@ class Matrix
         RowProxy(){
 
             
-            if(!rowp){
+            if(!rowpm){
                 rowp = new vector<int>;
                 rowpm = new map<int, int>;
             }
