@@ -12,7 +12,7 @@ class IObserver
 {
 public:
 
-    virtual void NotifyV(std::vector<std::string>* vec_str, std::vector<time_t>& vt) = 0;
+    virtual void NotifyV(std::vector<std::string>* vec_str) = 0; //, std::vector<time_t>& vt
 
     virtual ~IObserver() = default;
 };
@@ -21,7 +21,7 @@ class Terminal : public IObserver
 {
 public:
 
-    void NotifyV(std::vector<std::string>* vc, std::vector<time_t>& vt) override
+    void NotifyV(std::vector<std::string>* vc) override //, std::vector<time_t>& vt
     {
         if((*vc).size()>0){
             std::cout << "bulk: ";
@@ -35,18 +35,17 @@ public:
             }
             std::cout << std::endl;
         }
-
     }
 };
 class FileLogger : public IObserver
 {
 public:
 
-    void NotifyV(std::vector<std::string>* vc, std::vector<time_t>& vt) override
+    void NotifyV(std::vector<std::string>* vc) override //, std::vector<time_t>& vt
     {
-        if(((*vc).size() > 0) && (vt.size() > 0)){
+        if(((*vc).size() > 0) && (vec_tm.size() > 0)){
 
-            std::string fname = "bulk"+std::to_string(vt.at(0))+".log";
+            std::string fname = "bulk"+std::to_string(vec_tm.at(0))+".log";
             std::ofstream file(fname);
 
             if (file.is_open()) {
@@ -67,6 +66,10 @@ public:
 
         }
     }
+    void set_vec_tm(std::vector<time_t>& vt){
+        vec_tm = vt;
+    }
+    std::vector<time_t> vec_tm;
 };
 
 
@@ -101,19 +104,14 @@ public:
     {
         if (arg) {
 
-
             std::string* str = static_cast<std::string*>(arg);
 
             if(*str == "{"){
 
                 if(count_block == 0){
                     Notify();
-
                 }
                 count_block++;
-
-
-
             }
             else if(*str == "}"){
                 if(count_block >= 1){
@@ -132,7 +130,7 @@ public:
                 if(((*vec_str).size() == N) && (count_block == 0)){
                     Notify();
                 }
-           }
+            }
         }
     }
 
@@ -141,8 +139,12 @@ public:
 
 
             for (IObserver* o : _obs) {
+                FileLogger* fl = dynamic_cast<FileLogger*>(o);
+                if(fl){
+                    fl->set_vec_tm(vec_time);
+                }
 
-                o->NotifyV(vec_str, vec_time);
+                o->NotifyV(vec_str);
             }
             clear(vec_str, vec_time);
 
@@ -204,11 +206,12 @@ protected:
 int main(int argc, char* argv[])
 {
     unsigned int N;
+    if(argc > 1){
+        N = std::stoi(argv[1]);
 
-    N = std::stoi(argv[1]);
-    Controller c(N);
-    c.AppRun();
+        Controller c(N);
+        c.AppRun();
 
-
+    }
     return 0;
 }
