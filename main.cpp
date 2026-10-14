@@ -3,93 +3,212 @@
 #include <vector>
 #include <ctime>
 #include <fstream>
+#include <list>
 
-using namespace std;
 
-void out_vect(vector<string>& vc, vector<time_t>& vt)
+
+
+class IObserver
 {
-    if((vc.size() != 0) && (vt.size() > 0)){
+public:
 
-        string fname = "bulk"+to_string(vt.at(0))+".log";
-        ofstream file(fname);
+    virtual void NotifyV(std::vector<std::string>* vec_str, std::vector<time_t>& vt) = 0;
 
-        if (file.is_open()) {
+    virtual ~IObserver() = default;
+};
 
-            for(size_t n = 0;n < vc.size();n++){
-                cout << vc[n];
-                file << vc[n];
-                if(n != vc.size()-1){
-                    cout << ", ";
-                    file << ", ";
+class Terminal : public IObserver
+{
+public:
+
+    void NotifyV(std::vector<std::string>* vc, std::vector<time_t>& vt) override
+    {
+        if((*vc).size()>0){
+            std::cout << "bulk: ";
+            for(size_t n = 0;n < (*vc).size();n++){
+                std::cout << (*vc).at(n);
+
+                if(n != (*vc).size()-1){
+                    std::cout << ", ";
+
                 }
             }
-            cout << endl;
-            vc.clear();
-            vt.erase(vt.begin());
-
-            file.close();
-        //cout << "Запись прошла успешно!" << endl;
-        } else {
-            cout << "Ошибка при открытии файла!" << endl;
+            std::cout << std::endl;
         }
 
     }
-
-}
-
-int main()
+};
+class FileLogger : public IObserver
 {
-    vector<string> vec_str;
-    vector<time_t> vec_time;
-    bool dynamic_bloc = false;
-    unsigned int N = 3, count_block = 0;
-    string line;
-    getline(cin, line);
+public:
+
+    void NotifyV(std::vector<std::string>* vc, std::vector<time_t>& vt) override
+    {
+        if(((*vc).size() > 0) && (vt.size() > 0)){
+
+            std::string fname = "bulk"+std::to_string(vt.at(0))+".log";
+            std::ofstream file(fname);
+
+            if (file.is_open()) {
+
+                for(size_t n = 0;n < (*vc).size();n++){
+
+                    file << (*vc)[n];
+                    if(n != (*vc).size()-1){
+
+                        file << ", ";
+                    }
+                }
+
+            } else {
+                std::cout << "Ошибка при открытии файла!" << std::endl;
+            }
+
+
+        }
+    }
+};
+
+
+class Observable
+{
+public:
+
+    Observable()
+    {
+
+        vec_str = new std::vector<std::string>;
+        count_block =0;
+
+    }
+    void AddObserver(IObserver* o)
+    {
+        _obs.push_back(o);
+    }
+    ~Observable()
+    {
+        delete vec_str;
+
+    }
+    void setN(unsigned n)
+    {
+        N = n;
+    }
 
 
 
-    while(line != "eof"){
+    void SetData(void* arg)
+    {
+        if (arg) {
 
-            if(line == "{"){
+
+            std::string* str = static_cast<std::string*>(arg);
+
+            if(*str == "{"){
 
                 if(count_block == 0){
-                    out_vect(vec_str, vec_time);
+                    Notify();
 
-
-                    dynamic_bloc = true;
-                    std::time_t result = std::time(nullptr);
-                    vec_time.push_back(result);//std::asctime(std::localtime(&result)));
                 }
                 count_block++;
 
-                getline(cin, line);
-                continue;
+
+
             }
-            if(line == "}"){
-                count_block--;
-                if(count_block == 0){
-                    out_vect(vec_str, vec_time);
-                    dynamic_bloc = false;
+            else if(*str == "}"){
+                if(count_block >= 1){
+                    count_block--;
+                    if(count_block == 0){
+                        Notify();
+                    }
                 }
-                getline(cin, line);
-                continue;
             }
-
-        vec_str.push_back(line);
-        if(vec_str.size() == 1){
-            std::time_t result = std::time(nullptr);
-            vec_time.push_back(result);//std::asctime(std::localtime(&result)));
+            else{
+                vec_str->push_back(*str);
+                if((*vec_str).size() == 1){
+                    std::time_t result = std::time(nullptr);
+                    vec_time.push_back(result);
+                }
+                if(((*vec_str).size() == N) && (count_block == 0)){
+                    Notify();
+                }
+           }
         }
-        if((vec_str.size() == N) && !dynamic_bloc){
-            out_vect(vec_str, vec_time);
-        }
+    }
 
-        getline(cin, line);
+    void Notify()
+    {
+
+
+            for (IObserver* o : _obs) {
+
+                o->NotifyV(vec_str, vec_time);
+            }
+            clear(vec_str, vec_time);
+
     }
-    if(!dynamic_bloc){
-        out_vect(vec_str, vec_time);
+    void clear(std::vector<std::string>* vec_str, std::vector<time_t>& vt)
+    {
+        (*vec_str).clear();
+        vt.clear();
     }
+private:
+
+    std::vector<std::string>* vec_str = nullptr;
+    std::vector<time_t> vec_time;
+
+    std::list<IObserver*> _obs;
+    unsigned N, count_block;
+};
+
+class Controller
+{
+public:
+
+    Controller(unsigned n){
+        N = n;
+
+        Observable observable;
+    }
+
+    void AppRun()
+    {
+        observable.AddObserver(new Terminal());
+        observable.AddObserver(new FileLogger());
+        observable.setN(N);
+
+
+        std::string input;
+
+
+        while (std::getline(std::cin, input)) {
+
+        //for (;;) {
+            //std::getline(std::cin, input);
+
+            if (!input.empty()) {
+
+                observable.SetData((void*)&input);
+            }
+            else {
+                std::cout << "Empty command!" << std::endl;
+            }
+        }
+    }
+protected:
+    Observable observable;
+    unsigned N;
+};
+
+
+int main(int argc, char* argv[])
+{
+    unsigned int N;
+
+    N = std::stoi(argv[1]);
+    Controller c(N);
+    c.AppRun();
+
 
     return 0;
 }
-
