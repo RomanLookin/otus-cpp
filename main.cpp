@@ -77,7 +77,7 @@ class Matrix
                     public:
                     CellProxy(Matrix& matrix, int x, int y) : matrix(matrix), x(x), y(y) {
                         matrix.index = -1;
-                        for(int l=0;l<matrix.X.size();l++){
+                        for(size_t l=0;l<matrix.X.size();l++){
                             if((matrix.X.at(l) == x) && (matrix.Y.at(l) == y)){
                                 matrix.index = l;
                             }
@@ -90,7 +90,7 @@ class Matrix
                     }
 
 
-                    int& operator[](int n){
+                    int& operator[](int x){
                         
                         return x;
                     }
@@ -127,7 +127,7 @@ class Matrix
                         
                         if(matrix.X.size() == matrix.V.size()){
                             matrix.index = -1;
-                            for(int l=0;l<matrix.X.size();l++){
+                            for(size_t l=0;l<matrix.X.size();l++){
                                 if((matrix.X.at(l) == x) && (matrix.Y.at(l) == y)){
                                     matrix.index = l;
                                 }
