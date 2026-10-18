@@ -90,7 +90,7 @@ class Matrix
                     }
 
 
-                    int operator[](int n){
+                    int operator[](int x){
                         
                         return x;
                     }
