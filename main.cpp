@@ -90,12 +90,12 @@ class Matrix
                     }
 
 
-                    int& operator[](int x){
+                    int operator[](int n){
                         
                         return x;
                     }
 
-                    int &operator=(int v){
+                    void operator=(int v){
                         if(v != 0){
                             if(matrix.index == -1){
                                 matrix.V.push_back(v);
@@ -144,7 +144,7 @@ class Matrix
                             return 0;
 
                         }
-
+                        return 0;
                         
 
                     }
