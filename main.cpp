@@ -22,7 +22,7 @@ public:
 
     void NotifyV(const std::vector<std::string>& vc, std::time_t timestamp) override
     {
-        if(vc.size()>0){
+        if((vc.size()>0) && (timestamp != 0)){
             std::cout << "bulk: ";
             for(size_t n = 0;n < vc.size();n++){
                 std::cout << vc.at(n);
@@ -77,7 +77,7 @@ public:
     Observable()
     {
 
-
+        timestamp = 0;
         count_block =0;
 
     }
@@ -132,12 +132,13 @@ public:
 
                 o->NotifyV(vec_str, timestamp);
             }
-            clear(vec_str);
+            clear(vec_str, timestamp);
 
     }
-    void clear(std::vector<std::string>& vec_str)
+    void clear(std::vector<std::string>& vec_str, std::time_t& timestamp)
     {
         vec_str.clear();
+        timestamp = 0;
 
     }
     unsigned get_count()
