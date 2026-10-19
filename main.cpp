@@ -4,7 +4,7 @@
 #include <ctime>
 #include <fstream>
 #include <list>
-
+#include <memory>
 
 
 
@@ -12,8 +12,7 @@ class IObserver
 {
 public:
 
-    virtual void NotifyV(std::vector<std::string>* vec_str) = 0; //, std::vector<time_t>& vt
-
+    virtual void NotifyV(const std::vector<std::string>& vec_str, std::time_t timestamp) = 0;
     virtual ~IObserver() = default;
 };
 
@@ -21,14 +20,14 @@ class Terminal : public IObserver
 {
 public:
 
-    void NotifyV(std::vector<std::string>* vc) override //, std::vector<time_t>& vt
+    void NotifyV(const std::vector<std::string>& vc, std::time_t timestamp) override
     {
-        if((*vc).size()>0){
+        if(vc.size()>0){
             std::cout << "bulk: ";
-            for(size_t n = 0;n < (*vc).size();n++){
-                std::cout << (*vc).at(n);
+            for(size_t n = 0;n < vc.size();n++){
+                std::cout << vc.at(n);
 
-                if(n != (*vc).size()-1){
+                if(n != vc.size()-1){
                     std::cout << ", ";
 
                 }
@@ -41,19 +40,20 @@ class FileLogger : public IObserver
 {
 public:
 
-    void NotifyV(std::vector<std::string>* vc) override //, std::vector<time_t>& vt
-    {
-        if(((*vc).size() > 0) && (vec_tm.size() > 0)){
 
-            std::string fname = "bulk"+std::to_string(vec_tm.at(0))+".log";
+    void NotifyV(const std::vector<std::string>& vc, std::time_t timestamp) override
+    {
+
+        if(vc.size() > 0){
+            std::string fname = "bulk"+std::to_string(timestamp)+".log";
             std::ofstream file(fname);
 
             if (file.is_open()) {
 
-                for(size_t n = 0;n < (*vc).size();n++){
+                for(size_t n = 0;n < vc.size();n++){
 
-                    file << (*vc)[n];
-                    if(n != (*vc).size()-1){
+                    file << vc[n];
+                    if(n != vc.size()-1){
 
                         file << ", ";
                     }
@@ -66,10 +66,7 @@ public:
 
         }
     }
-    void set_vec_tm(std::vector<time_t>& vt){
-        vec_tm = vt;
-    }
-    std::vector<time_t> vec_tm;
+
 };
 
 
@@ -80,19 +77,15 @@ public:
     Observable()
     {
 
-        vec_str = new std::vector<std::string>;
+
         count_block =0;
 
     }
-    void AddObserver(IObserver* o)
+    void AddObserver(std::shared_ptr<IObserver> o)
     {
         _obs.push_back(o);
     }
-    ~Observable()
-    {
-        delete vec_str;
 
-    }
     void setN(unsigned n)
     {
         N = n;
@@ -100,20 +93,16 @@ public:
 
 
 
-    void SetData(void* arg)
+    void SetData(const std::string& cmd) //void* arg)
     {
-        if (arg) {
 
-            std::string* str = static_cast<std::string*>(arg);
-
-            if(*str == "{"){
-
+            if(cmd == "{"){
                 if(count_block == 0){
                     Notify();
                 }
                 count_block++;
             }
-            else if(*str == "}"){
+            else if(cmd == "}"){
                 if(count_block >= 1){
                     count_block--;
                     if(count_block == 0){
@@ -122,44 +111,47 @@ public:
                 }
             }
             else{
-                vec_str->push_back(*str);
-                if((*vec_str).size() == 1){
-                    std::time_t result = std::time(nullptr);
-                    vec_time.push_back(result);
+                vec_str.push_back(cmd);
+                if(vec_str.size() == 1){
+
+                    timestamp = std::time(nullptr);
                 }
-                if(((*vec_str).size() == N) && (count_block == 0)){
+                if((vec_str.size() == N) && (count_block == 0)){
                     Notify();
                 }
             }
-        }
+
     }
 
     void Notify()
     {
 
 
-            for (IObserver* o : _obs) {
-                FileLogger* fl = dynamic_cast<FileLogger*>(o);
-                if(fl){
-                    fl->set_vec_tm(vec_time);
-                }
 
-                o->NotifyV(vec_str);
+            for (std::shared_ptr<IObserver> o : _obs) {
+
+                o->NotifyV(vec_str, timestamp);
             }
-            clear(vec_str, vec_time);
+            clear(vec_str);
 
     }
-    void clear(std::vector<std::string>* vec_str, std::vector<time_t>& vt)
+    void clear(std::vector<std::string>& vec_str)
     {
-        (*vec_str).clear();
-        vt.clear();
+        vec_str.clear();
+
+    }
+    unsigned get_count()
+    {
+        return count_block;
     }
 private:
 
-    std::vector<std::string>* vec_str = nullptr;
-    std::vector<time_t> vec_time;
 
-    std::list<IObserver*> _obs;
+    std::vector<std::string> vec_str;
+
+    std::time_t timestamp;
+
+    std::list<std::shared_ptr<IObserver>> _obs;
     unsigned N, count_block;
 };
 
@@ -167,16 +159,16 @@ class Controller
 {
 public:
 
-    Controller(unsigned n){
-        N = n;
-
-        Observable observable;
-    }
+    Controller(unsigned n) : N(n) {}
 
     void AppRun()
     {
-        observable.AddObserver(new Terminal());
-        observable.AddObserver(new FileLogger());
+        std::shared_ptr<Terminal> shp_h = std::make_shared<Terminal>();
+        std::shared_ptr<FileLogger> shp_fl = std::make_shared<FileLogger>();
+
+
+        observable.AddObserver(shp_h);
+        observable.AddObserver(shp_fl);
         observable.setN(N);
 
 
@@ -190,12 +182,14 @@ public:
 
             if (!input.empty()) {
 
-                observable.SetData((void*)&input);
+                observable.SetData(input);
             }
             else {
                 std::cout << "Empty command!" << std::endl;
             }
         }
+        if(observable.get_count() ==0)
+            observable.Notify();
     }
 protected:
     Observable observable;
