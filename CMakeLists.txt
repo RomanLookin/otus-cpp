@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_requiredVERSION 3.12)
 
 project(hw6)
 option(WITH_BOOST_TEST "Whether to build Boost test" OFF)
