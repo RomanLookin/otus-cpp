@@ -5,7 +5,7 @@
 #include <fstream>
 #include <list>
 #include <memory>
-
+#include "async.h"
 
 
 class IObserver
@@ -182,7 +182,7 @@ public:
             //std::getline(std::cin, input);
 
             if (!input.empty()) {
-
+                //simple::connect(N);
                 observable.SetData(input);
             }
             else {
