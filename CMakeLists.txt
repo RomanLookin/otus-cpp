@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(bulk)
 option(WITH_BOOST_TEST "Whether to build Boost test" OFF)
-add_executable(${PROJECT_NAME} "main.cpp")
+add_executable(${PROJECT_NAME} "main.cpp" "async.h")
 #set_target_properties(
 #        print_ip PROPERTIES
 #        CXX_STANDARD 14
